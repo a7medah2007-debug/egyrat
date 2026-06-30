@@ -1,0 +1,25 @@
+# Gradle files
+.gradle/
+build/
+app/build/
+
+# Android Studio / IntelliJ files
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Local configuration files
+local.properties
+
+# Log files
+*.log
+
+# Keystore files (dynamic signing used in Actions)
+*.jks
+*.keystore
+
+# OS files
+.DS_Store
+Thumbs.db

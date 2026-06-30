@@ -1,0 +1,62 @@
+name: Build Android Release APKs
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+        cache: 'gradle'
+
+    - name: Generate Keystore
+      run: |
+        keytool -genkeypair -v \
+          -keystore keystore.jks \
+          -keyalg RSA \
+          -keysize 2048 \
+          -validity 10000 \
+          -alias releaseKey \
+          -storepass password123 \
+          -keypass password123 \
+          -dname "CN=Antigravity, OU=Google, O=DeepMind, L=London, S=London, C=UK"
+        # Copy the keystore to both project roots so Gradle can find it as ../keystore.jks (relative to app/ folder)
+        cp keystore.jks ControllerApp/keystore.jks
+        cp keystore.jks TargetApp/keystore.jks
+
+    - name: Build ControllerApp Release APK
+      working-directory: ControllerApp
+      run: |
+        gradle wrapper
+        ./gradlew assembleRelease
+
+    - name: Build TargetApp Release APK
+      working-directory: TargetApp
+      run: |
+        gradle wrapper
+        ./gradlew assembleRelease
+
+    - name: Upload ControllerApp Release APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: ControllerApp-Release
+        path: ControllerApp/app/build/outputs/apk/release/app-release.apk
+
+    - name: Upload TargetApp Release APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: TargetApp-Release
+        path: TargetApp/app/build/outputs/apk/release/app-release.apk
