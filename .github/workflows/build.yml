@@ -40,13 +40,13 @@ jobs:
     - name: Build ControllerApp Release APK
       working-directory: ControllerApp
       run: |
-        gradle wrapper
+        gradle wrapper --gradle-version 8.5
         ./gradlew assembleRelease
 
     - name: Build TargetApp Release APK
       working-directory: TargetApp
       run: |
-        gradle wrapper
+        gradle wrapper --gradle-version 8.5
         ./gradlew assembleRelease
 
     - name: Upload ControllerApp Release APK
